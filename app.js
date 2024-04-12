@@ -5,6 +5,7 @@ const blockWidth = 100;
 const blockHeight = 20;
 const boardWidth = 560;
 const boardHeight = 300;
+const ballDiameter = 20;
 let xDirection = -2;
 let yDirection = 2;
 
@@ -92,7 +93,7 @@ function drawBall() {
 
 //now we create function for when we press left or right button,
 //it response and user block start moving
-//and we give it statement not to left our grid(display)
+//and we give it statement not to leave our grid(display)
 function moveUser(e) {
   switch (e.key) {
     case "ArrowLeft":
@@ -112,9 +113,91 @@ function moveUser(e) {
 }
 document.addEventListener("keydown", moveUser);
 
+//function for to be able to moving ball
 function moveBall() {
   ballCurrentPosition[0] += xDirection;
   ballCurrentPosition[1] += yDirection;
   drawBall();
+  checkForCollision();
 }
 timerId = setInterval(moveBall, 30);
+
+function checkForCollision() {
+  //block collision checking
+  //we should compare border of blocks array elements with current ball position
+  //then we grab all blocks again and remove elemnt which is collision happened.
+  for (let i = 0; i < blocks.length; i++) {
+    if (
+      ballCurrentPosition[0] > blocks[i].bottomLeft[0] &&
+      ballCurrentPosition[0] < blocks[i].bottomRight[0] &&
+      ballCurrentPosition[1] + ballDiameter > blocks[i].bottomLeft[1] &&
+      ballCurrentPosition[1] < blocks[i].topLeft[1]
+    ) {
+      const allBlocks = document.querySelectorAll(".block");
+      allBlocks[i].classList.remove("block");
+      //common way in js to remove element fom array
+      blocks.splice(i, 1);
+      changeDirection();
+      //after remove eleement we can add 1 score
+      score++;
+      scoreDisplay.innerHTML = score;
+
+      //when all element removed this mean is we won
+      //we stoped game for playing
+      if (blocks.length == 0) {
+        scoreDisplay.innerHTML = "Congratulation, You Win!";
+        clearInterval(timerId);
+        document.removeEventListener("keydown", moveUser);
+      }
+    }
+  }
+
+  //wall collision checking
+  if (
+    ballCurrentPosition[0] >= boardWidth - ballDiameter ||
+    ballCurrentPosition[0] <= 0 ||
+    ballCurrentPosition[1] >= boardHeight - ballDiameter
+  ) {
+    changeDirection();
+  }
+
+  //user collision checing
+  if (
+    ballCurrentPosition[0] > currentPosition[0] &&
+    ballCurrentPosition[0] < currentPosition[0] + blockWidth &&
+    ballCurrentPosition[1] > currentPosition[1] &&
+    ballCurrentPosition[1] < currentPosition[1] + blockHeight
+  ) {
+    changeDirection();
+  }
+
+  //we check game over in this function because player lose in collision
+  if (ballCurrentPosition[1] <= 0) {
+    clearInterval(timerId);
+    scoreDisplay.innerHTML = "You Lose!";
+    document.removeEventListener("keydown", moveUser);
+  }
+}
+
+//and we have to check conditions
+function changeDirection() {
+  if (xDirection === 2 && yDirection === 2) {
+    yDirection = -2;
+    return;
+  }
+
+  if (xDirection === 2 && yDirection === -2) {
+    xDirection = -2;
+    return;
+  }
+
+  if (xDirection === -2 && yDirection === -2) {
+    yDirection = 2;
+    return;
+  }
+
+  if (xDirection === -2 && yDirection === 2) {
+    xDirection = 2;
+    return;
+  }
+}
