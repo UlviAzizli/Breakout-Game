@@ -71,7 +71,6 @@ function addBlocks() {
 addBlocks();
 
 const ball = new Ball(ballStart);
-
 function moveUser(e) {
   switch (e.key) {
     case "ArrowLeft":

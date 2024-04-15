@@ -1,24 +1,81 @@
-/* Style for the game container */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 #game-start,
 #game,
 #game-end {
   text-align: center;
 }
 
-/* Style for the game start page */
 #game-start {
-  margin-top: 50px;
+  background: url(images/brickbrett.jpg) no-repeat center center;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Style for the game end page */
+#game-start h2 {
+  color: white;
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.7
+  ); /* Change background color and adjust opacity */
+  padding: 20px 40px; /* Add padding to increase visibility */
+  border-radius: 5px; /* Add border radius for better appearance */
+  margin-bottom: 20px; /* Add margin to increase space between the text and button */
+  font-size: 36px; /* Increase font size */
+}
+
+#game {
+  background-color: #51258a;
+  width: 100vw;
+  height: 100vh;
+}
+
 #game-end {
-  margin-top: 100px;
+  background: url(images/gameover.jpeg) no-repeat center center;
+  background-size: cover;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-/* Style for the buttons */
+#game-end p {
+  color: white;
+
+  font-size: 36px;
+  margin-bottom: 20px; /* Add margin to increase space between the text and button */
+}
+
+#restartButton {
+  padding: 15px 30px;
+  font-size: 20px;
+  background-color: #ff0000;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#restartButton:hover {
+  background-color: #45a049;
+}
+
 button {
-  padding: 10px 20px;
-  font-size: 16px;
+  padding: 15px 30px;
+  font-size: 20px;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -30,7 +87,6 @@ button:hover {
   background-color: #45a049;
 }
 
-/* Style for the grid */
 .grid {
   position: relative;
   width: 560px;
@@ -39,7 +95,6 @@ button:hover {
   margin-top: 50px;
 }
 
-/* Style for the user paddle */
 .user {
   position: absolute;
   width: 100px;
@@ -47,25 +102,22 @@ button:hover {
   background-color: #4caf50;
 }
 
-/* Style for the ball */
 .ball {
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: #f44336;
+  background-color: #e5740b;
   border-radius: 50%;
 }
 
-/* Style for the blocks */
 .block {
   position: absolute;
   width: 100px;
   height: 20px;
   background-color: #2196f3;
-  background: linear-gradient(to bottom, #4e54c8, #8f94fb);
+  background: linear-gradient(to bottom, #bf4646, #5f0202);
 }
 
-/* Style for the score */
 #score {
   position: absolute;
   top: 10px;
