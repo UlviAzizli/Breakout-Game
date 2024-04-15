@@ -1,4 +1,6 @@
-//we save information what we got.
+const gameStart = document.getElementById("game-start");
+const game = document.getElementById("game");
+const gameEnd = document.getElementById("game-end");
 const grid = document.querySelector(".grid");
 const scoreDisplay = document.querySelector("#score");
 const blockWidth = 100;
@@ -8,29 +10,41 @@ const boardHeight = 300;
 const ballDiameter = 20;
 let xDirection = -2;
 let yDirection = 2;
-
 let timerId;
 let score = 0;
 
+const startButton = document.getElementById("startButton");
+startButton.addEventListener("click", function () {
+  startGame();
+});
+
+const restartButton = document.getElementById("restartButton");
+restartButton.addEventListener("click", function () {
+  window.location.reload();
+});
+
+function startGame() {
+  gameStart.style.display = "none";
+  game.style.display = "block";
+  timerId = setInterval(moveBall, 30);
+}
+
+function showEndScreen(message) {
+  game.style.display = "none";
+  gameEnd.style.display = "block";
+  document.getElementById("final-score").innerText = score;
+  document.getElementById("game-end-message").innerHTML = message;
+}
+
 const userStart = [230, 10];
-//user start every time the same position,
-//when user start, current position will change accordingly(reason for using let).
 let currentPosition = userStart;
 
 const ballStart = [270, 40];
 let ballCurrentPosition = ballStart;
 
-//for create multiple blocks we use constructor
-class Block {
-  constructor(xAxis, yAxis) {
-    this.bottomLeft = [xAxis, yAxis];
-    this.bottomRight = [xAxis + blockWidth, yAxis];
-    this.topLeft = [xAxis, yAxis + blockHeight];
-    this.topRight = [xAxis + blockWidth, yAxis + blockHeight];
-  }
-}
+const player = new Player(userStart);
+player.draw();
 
-//creating blocks
 const blocks = [
   new Block(10, 270),
   new Block(120, 270),
@@ -48,84 +62,37 @@ const blocks = [
   new Block(340, 210),
   new Block(450, 210),
 ];
-//to control what is going on, and later can explain with console.log
-//console.log(blocks);
 
-//we have to draw blocks which we already give it size.
-//we iterate them and create 15 blocks, give them style,
-//and (important) seperate them in page, which they all occupied same spot.
 function addBlocks() {
   for (let i = 0; i < blocks.length; i++) {
-    const block = document.createElement("div");
-    block.classList.add("block");
-    block.style.left = blocks[i].bottomLeft[0] + "px";
-    block.style.bottom = blocks[i].bottomLeft[1] + "px";
-    grid.appendChild(block);
+    blocks[i].draw();
   }
 }
 addBlocks();
 
-//adding user(for this firstly create it, then add it class for able to work css)
-const user = document.createElement("div");
-user.classList.add("user");
-//then we put user in the grid
-grid.appendChild(user);
-//call a function to make the user appear at the bottom middle.
-drawUser();
+const ball = new Ball(ballStart);
 
-//adding ball(repeat user method)
-const ball = document.createElement("div");
-ball.classList.add("ball");
-grid.appendChild(ball);
-drawBall();
-
-//make user start middle bottom(add left and top property and append "px").
-//because to be able to use it later add it inside function
-function drawUser() {
-  user.style.left = currentPosition[0] + "px";
-  user.style.bottom = currentPosition[1] + "px";
-}
-
-function drawBall() {
-  ball.style.left = ballCurrentPosition[0] + "px";
-  ball.style.bottom = ballCurrentPosition[1] + "px";
-}
-
-//now we create function for when we press left or right button,
-//it response and user block start moving
-//and we give it statement not to leave our grid(display)
 function moveUser(e) {
   switch (e.key) {
     case "ArrowLeft":
-      if (currentPosition[0] > 0) {
-        currentPosition[0] -= 10;
-        drawUser();
-      }
+      player.moveLeft();
       break;
-
     case "ArrowRight":
-      if (currentPosition[0] < boardWidth - blockWidth) {
-        currentPosition[0] += 10;
-        drawUser();
-      }
+      player.moveRight();
       break;
   }
 }
 document.addEventListener("keydown", moveUser);
 
-//function for to be able to moving ball
 function moveBall() {
   ballCurrentPosition[0] += xDirection;
   ballCurrentPosition[1] += yDirection;
-  drawBall();
+  ball.draw();
   checkForCollision();
 }
-timerId = setInterval(moveBall, 30);
 
 function checkForCollision() {
-  //block collision checking
-  //we should compare border of blocks array elements with current ball position
-  //then we grab all blocks again and remove elemnt which is collision happened.
+  // Block collision checking
   for (let i = 0; i < blocks.length; i++) {
     if (
       ballCurrentPosition[0] > blocks[i].bottomLeft[0] &&
@@ -135,24 +102,20 @@ function checkForCollision() {
     ) {
       const allBlocks = document.querySelectorAll(".block");
       allBlocks[i].classList.remove("block");
-      //common way in js to remove element fom array
       blocks.splice(i, 1);
       changeDirection();
-      //after remove eleement we can add 1 score
       score++;
-      scoreDisplay.innerHTML = score;
-
-      //when all element removed this mean is we won
-      //we stoped game for playing
+      scoreDisplay.innerHTML = `point: ${score}`;
       if (blocks.length == 0) {
-        scoreDisplay.innerHTML = "Congratulation, You Win!";
+        //scoreDisplay.innerHTML = "Congratulations, You Win!";
         clearInterval(timerId);
+        showEndScreen("Congratulations, You Win!");
         document.removeEventListener("keydown", moveUser);
       }
     }
   }
 
-  //wall collision checking
+  // Wall collision checking
   if (
     ballCurrentPosition[0] >= boardWidth - ballDiameter ||
     ballCurrentPosition[0] <= 0 ||
@@ -161,43 +124,33 @@ function checkForCollision() {
     changeDirection();
   }
 
-  //user collision checing
+  // User collision checking
   if (
-    ballCurrentPosition[0] > currentPosition[0] &&
-    ballCurrentPosition[0] < currentPosition[0] + blockWidth &&
-    ballCurrentPosition[1] > currentPosition[1] &&
-    ballCurrentPosition[1] < currentPosition[1] + blockHeight
+    ballCurrentPosition[0] + ballDiameter > player.position[0] &&
+    ballCurrentPosition[0] < player.position[0] + blockWidth &&
+    ballCurrentPosition[1] > player.position[1] &&
+    ballCurrentPosition[1] < player.position[1] + blockHeight
   ) {
     changeDirection();
   }
 
-  //we check game over in this function because player lose in collision
+  // Game over checking
   if (ballCurrentPosition[1] <= 0) {
     clearInterval(timerId);
-    scoreDisplay.innerHTML = "You Lose!";
+    showEndScreen("Game Over. You Lose!");
+    //scoreDisplay.innerHTML = "Game Over. You Lose!";
     document.removeEventListener("keydown", moveUser);
   }
 }
 
-//and we have to check conditions
 function changeDirection() {
   if (xDirection === 2 && yDirection === 2) {
     yDirection = -2;
-    return;
-  }
-
-  if (xDirection === 2 && yDirection === -2) {
+  } else if (xDirection === 2 && yDirection === -2) {
     xDirection = -2;
-    return;
-  }
-
-  if (xDirection === -2 && yDirection === -2) {
+  } else if (xDirection === -2 && yDirection === -2) {
     yDirection = 2;
-    return;
-  }
-
-  if (xDirection === -2 && yDirection === 2) {
+  } else if (xDirection === -2 && yDirection === 2) {
     xDirection = 2;
-    return;
   }
 }

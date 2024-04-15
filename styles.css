@@ -1,29 +1,75 @@
-.grid {
-  position: absolute;
-  width: 560px;
-  height: 300px;
-  border: solid 1px black;
+/* Style for the game container */
+#game-start,
+#game,
+#game-end {
+  text-align: center;
+}
+
+/* Style for the game start page */
+#game-start {
+  margin-top: 50px;
+}
+
+/* Style for the game end page */
+#game-end {
   margin-top: 100px;
 }
 
+/* Style for the buttons */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+/* Style for the grid */
+.grid {
+  position: relative;
+  width: 560px;
+  height: 300px;
+  border: solid 1px black;
+  margin-top: 50px;
+}
+
+/* Style for the user paddle */
 .user {
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: blueviolet;
+  background-color: #4caf50;
 }
 
+/* Style for the ball */
 .ball {
   position: absolute;
   width: 20px;
   height: 20px;
-  background-color: red;
-  border-radius: 10px;
+  background-color: #f44336;
+  border-radius: 50%;
 }
 
+/* Style for the blocks */
 .block {
   position: absolute;
   width: 100px;
   height: 20px;
-  background-color: blue;
+  background-color: #2196f3;
+  background: linear-gradient(to bottom, #4e54c8, #8f94fb);
+}
+
+/* Style for the score */
+#score {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 24px;
+  color: #333;
 }
